@@ -12,7 +12,8 @@ Product:
 * imageUrl
 
 Purchase:
-* products: (array of Product)
+* items: (array of Product)
+* closed: boolean
 * user: ref
 * timestamp
 * virtual: totalCost()
@@ -28,8 +29,9 @@ Purchase:
 * PATCH '/change-password' (auth)
 * DELETE '/sign-out' (auth)
 * GET '/products' (no auth) - index - `Product.find()`
-* GET '/purchases' (auth) - index - `Order.find({ user: id })`
-* GET '/cart' (auth) - show - `Order.find({ user: id,  closed: false })`
-* POST '/cart/:id' (auth) - add item - `Order.update({ products.add(:id) })`
-* DELETE '/cart/:id' (auth) - remove item - `Order.update({ products.remove(:id) })`
-* POST '/checkout' (auth) - update status - `Order.update({ closed: true })`
+* GET '/purchases' (auth) - index - `Purchase.find({ user })`
+* GET '/cart' (auth) - show - `Purchase.find({ user,  closed: false })`
+* POST '/cart' (auth) - create - `Purchase.create()`
+* POST '/cart/:id' (auth) - add item - `Purchase.update({ items.add(:id) })`
+* DELETE '/cart/:id' (auth) - remove item - `Purchase.update({ items.remove(:id) })`
+* POST '/checkout' (auth) - update status - `Purchase.update({ closed: true })`
