@@ -76,7 +76,7 @@ router.patch('/add-item/:id', requireToken, (req, res, next) => {
   // owner, prevent that by deleting that key/value pair
   // delete req.body.purchase.owner
 
-  Purchase.findOne({ closed: false })
+  Purchase.findOne({ closed: false, owner: req.user.id })
     .then(handle404)
     .then(cart => {
       requireOwnership(req, cart)
@@ -99,7 +99,7 @@ router.patch('/add-item/:id', requireToken, (req, res, next) => {
 
 // DELETE
 // DELETE item from cart
-router.delete('/remove-item/:id', (req, res, next) => {
+router.delete('/remove-item/:id', requireToken, (req, res, next) => {
   Purchase.findOne({ closed: false })
     .then(handle404)
     .then(cart => {
