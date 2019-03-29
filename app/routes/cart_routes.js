@@ -66,7 +66,6 @@ router.post('/cart', (req, res, next) => {
 // PATCH /cart
 router.patch('/add-item/:id', (req, res, next) => {
   // add item to cart
-  console.log(req.params.id)
   Purchase.findOne({ closed: false })
     .then(handle404)
     .then(cart => {
@@ -82,5 +81,44 @@ router.patch('/add-item/:id', (req, res, next) => {
     // if an error occurs, pass it to the handler
     .catch(next)
 })
+
+// DELETE
+// DELETE item from cart
+router.delete('/remove-item/:id', (req, res, next) => {
+  Purchase.findOne({ closed: false })
+    .then(handle404)
+    .then(cart => {
+      cart.items.pull(req.params.id)
+      console.log(cart)
+      cart.save()
+      return cart
+    })
+    // if that succeeded, return 201 and updated item as json
+    .then(cart => {
+      res.status(201).json({ cart: cart.toObject() })
+    })
+    // if an error occurs, pass it to the handler
+    .catch(next)
+})
+
+// UPDATE
+// UPDATE closed status to true
+router.delete('/checkout', (req, res, next) => {
+  Purchase.findOne({ closed: false })
+    .then(handle404)
+    .then(cart => {
+      cart.items.pull(req.params.id)
+      console.log(cart)
+      cart.save()
+      return cart
+    })
+    // if that succeeded, return 201 and updated item as json
+    .then(cart => {
+      res.status(201).json({ cart: cart.toObject() })
+    })
+    // if an error occurs, pass it to the handler
+    .catch(next)
+})
+
 
 module.exports = router
