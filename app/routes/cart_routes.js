@@ -22,9 +22,9 @@ const router = express.Router()
 
 // SHOW
 // GET /examples/5a7db6c74d55bc51bdf39793
-router.get('/cart', (req, res, next) => {
+router.get('/cart', requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
-  Purchase.findOne({ closed: false })
+  Purchase.findOne({ closed: false, owner: req.user.id })
     .populate('items')
     .exec(function (err, product) {
       if (err) throw err
@@ -80,9 +80,13 @@ router.patch('/add-item/:id', requireToken, (req, res, next) => {
     .then(handle404)
     .then(cart => {
       requireOwnership(req, cart)
-      cart.items.push(req.params.id)
+      cart.items.nonAtomicPush(req.params.id)
       console.log(cart)
-      cart.save()
+      cart.save(function (err) {
+        if (err) {
+          console.log(err)
+        }
+      })
       return cart
     })
     // if that succeeded, return 201 and updated item as json
