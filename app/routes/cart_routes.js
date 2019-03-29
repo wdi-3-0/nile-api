@@ -100,7 +100,7 @@ router.patch('/add-item/:id', requireToken, (req, res, next) => {
 // DELETE
 // DELETE item from cart
 router.delete('/remove-item/:id', requireToken, (req, res, next) => {
-  Purchase.findOne({ closed: false })
+  Purchase.findOne({ closed: false, owner: req.user.id })
     .then(handle404)
     .then(cart => {
       cart.items.pull(req.params.id)
