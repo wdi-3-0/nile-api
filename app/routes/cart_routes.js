@@ -1,6 +1,9 @@
 // Express docs: http://expressjs.com/en/api.html
 const express = require('express')
 
+// Passport docs: http://www.passportjs.org/docs/
+const passport = require('passport')
+
 // pull in Mongoose model for purchases
 const Purchase = require('../models/purchase')
 
@@ -10,6 +13,9 @@ const customErrors = require('../../lib/custom_errors')
 
 // we'll use this function to send 404 when non-existant document is requested
 const handle404 = customErrors.handle404
+
+const requireOwnership = customErrors.requireOwnership
+const requireToken = passport.authenticate('bearer', { session: false })
 
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
@@ -40,15 +46,17 @@ router.get('/cart', (req, res, next) => {
 
 // CREATE
 // POST /examples
-router.post('/cart', (req, res, next) => {
-  Purchase.create(req.body.cart, function (err, cart) {
-    if (err) throw err
+router.post('/cart', requireToken, (req, res, next) => {
+  req.body.purchase.owner = req.user.id
+  Purchase.create(req.body.purchase, function (err, cart) {
+    if (err) console.log(err)
     return cart
   })
-  // respond to succesful `create` with status 201 and JSON of new "cart"
+
     .then(cart => {
       return cart
     })
+  // respond to succesful `create` with status 201 and JSON of new "cart"
     // but logs type of this item as undefined
     .then(cart => {
       res.status(201).json({ cart: cart.toObject() })
