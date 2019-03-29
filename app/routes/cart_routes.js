@@ -69,11 +69,17 @@ router.post('/cart', requireToken, (req, res, next) => {
 
 // UPDATE
 // PATCH /cart
-router.patch('/add-item/:id', (req, res, next) => {
+router.patch('/add-item/:id', requireToken, (req, res, next) => {
   // add item to cart
+
+  // if the client attempts to change the `owner` property by including a new
+  // owner, prevent that by deleting that key/value pair
+  // delete req.body.purchase.owner
+
   Purchase.findOne({ closed: false })
     .then(handle404)
     .then(cart => {
+      requireOwnership(req, cart)
       cart.items.push(req.params.id)
       console.log(cart)
       cart.save()
