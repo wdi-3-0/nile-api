@@ -118,8 +118,8 @@ router.delete('/remove-item/:id', requireToken, (req, res, next) => {
 
 // UPDATE
 // UPDATE closed status to true
-router.patch('/checkout', (req, res, next) => {
-  Purchase.findOne({ closed: false })
+router.patch('/checkout', requireToken, (req, res, next) => {
+  Purchase.findOne({ closed: false, owner: req.user.id })
     .then(handle404)
     .then(cart => {
       return cart.update({ closed: true })
