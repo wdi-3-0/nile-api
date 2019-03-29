@@ -18,13 +18,10 @@ const router = express.Router()
 // GET /examples/5a7db6c74d55bc51bdf39793
 router.get('/cart', (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
-  Purchase.findOne({ _id: '5c9d4b7cff399b7fae0a8775' })
+  Purchase.findOne({ closed: false })
     .populate('items')
     .exec(function (err, product) {
       if (err) throw err
-      console.log(product.name)
-      console.log(product.price)
-      console.log(product._id)
       return product
     })
     // .then(cart => {
@@ -103,22 +100,18 @@ router.delete('/remove-item/:id', (req, res, next) => {
 
 // UPDATE
 // UPDATE closed status to true
-router.delete('/checkout', (req, res, next) => {
+router.patch('/checkout', (req, res, next) => {
   Purchase.findOne({ closed: false })
     .then(handle404)
     .then(cart => {
-      cart.items.pull(req.params.id)
-      console.log(cart)
-      cart.save()
-      return cart
+      return cart.update({ closed: true })
     })
     // if that succeeded, return 201 and updated item as json
     .then(cart => {
-      res.status(201).json({ cart: cart.toObject() })
+      res.sendStatus(204)
     })
     // if an error occurs, pass it to the handler
     .catch(next)
 })
-
 
 module.exports = router
