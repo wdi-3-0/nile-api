@@ -30,33 +30,30 @@ router.get('/cart', requireToken, (req, res, next) => {
       if (err) throw err
       return product
     })
-    .then(cart => {
-      if (cart === null) {
-        req.body = {purchase: {}}
-        req.body.purchase.owner = req.user.id
-        Purchase.create(req.body.purchase, function (err, cart) {
-          if (err) console.log(err)
-          return cart
-        })
-          .then(cart => {
-            return cart
-          })
-        // respond to succesful `create` with status 201 and JSON of new "cart"
-          // but logs type of this item as undefined
-          .then(cart => {
-            res.status(201).json({ cart })
-          })
-          // if an error occurs, pass it off to our error handler
-          // the error handler needs the error message and the `res` object so that it
-          // can send an error message back to the client
-          .catch(next)
-      }
-      return cart
-    })
-    .then(cart => res.status(200).json({ cart }))
+    .then(cart => res.status(200).json({ cart: cart.toObject() }))
 
     // if an error occurs, pass it to the handler
-    .catch(next)
+    .catch(() => {
+      req.body.purchase = {}
+      req.body.purchase.owner = req.user.id
+      Purchase.create(req.body.purchase, function (err, cart) {
+        if (err) console.log(err)
+        return cart
+      })
+
+        .then(cart => {
+          return cart
+        })
+      // respond to succesful `create` with status 201 and JSON of new "cart"
+        // but logs type of this item as undefined
+        .then(cart => {
+          res.status(201).json({ cart: cart.toObject() })
+        })
+        // if an error occurs, pass it off to our error handler
+        // the error handler needs the error message and the `res` object so that it
+        // can send an error message back to the client
+        .catch(next)
+    })
 })
 
 // CREATE
