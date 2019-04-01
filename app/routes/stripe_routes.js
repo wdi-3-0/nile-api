@@ -3,7 +3,7 @@ const express = require('express')
 require('dotenv').config()
 
 // configurations for stripe
-const keySecret = process.env.SECRET_KEY
+const keySecret = process.env.STRIPE_SECRET_KEY
 const stripe = require('stripe')(keySecret)
 const Token = require('../models/token')
 
