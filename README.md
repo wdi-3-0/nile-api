@@ -7,6 +7,8 @@ Checkout creates a related token, that we use to make a charge request through S
 
 See the front end in action [here](https://wdi-3-0.github.io/nile-client/)
 
+See the front end repo [here](https://github.com/wdi-3-0/nile-client)
+
 Unfortunately, we're not able to accept payments, or make deliveries at this point.
 Please use a test credit card 4242 4242 4242 4242, and an expiration date some
 date in the future to simulate buying something.
